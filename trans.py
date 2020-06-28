@@ -32,14 +32,23 @@ if not os.path.exists(dir):
 
 def write_to_file(file, trans):
     f = open(file, 'a+', encoding='utf8')
+    keys = []
+
     for s in trans:
         index = s.attributes['name'].value
+
+        if index in keys:
+            continue
+
         if s.childNodes:
             value = s.childNodes[0].nodeValue
         else:
             value = ''
 
+        value = value.replace('\\"', '"')
         value = value.replace('"', '\\"')
+        value = value.replace(u'\x98', '')
+        value = value.replace(u'\x7f', '')
         value = '"%s"' % value
 
         if 'darkorbit' in index:
@@ -51,14 +60,12 @@ def write_to_file(file, trans):
         if '"\\"' == value:
             value = '"\\\\"'
 
-        if '' in value:
-            value = value.replace('', '')
-
         if ',' == value:
             value = '","'
 
         value = value.replace('\n', ' ')
         f.write("%s: %s\n" % (index, value))
+        keys.append(index)
     f.close()
 
     with open(file, 'r') as stream:
