@@ -1,4 +1,5 @@
 #! /usr/bin/python3
+import base64
 import io
 import os
 import requests
@@ -6,6 +7,12 @@ import shutil
 import sys
 import xml.dom.minidom as xml
 import yaml
+
+rename = False
+wm = base64.b64decode('RGFya09yYml0').decode("utf-8")
+if sys.argv[1]:
+    rename = True
+    company = sys.argv[1]
 
 
 class colors:
@@ -19,7 +26,7 @@ languages = ['bg', 'cs', 'da', 'de', 'el', 'en', 'es', 'fi', 'fr', 'hu',
              'it', 'ja', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sv', 'tr']
 resources = ['resource_eic', 'resource_inventory', 'resource_achievement',
              'resource_chat', 'resource_loadingScreen', 'resource_items', 'flashres', 'resource_quest']
-url = "https://darkorbit-22.bpsecure.com/spacemap/templates/%s/" % dir
+url = "https://%s-22.bpsecure.com/spacemap/templates/%s/" % (wm.lower(), dir)
 
 if os.path.exists(dir):
     shutil.rmtree(dir)
@@ -44,16 +51,19 @@ def write_to_file(file, trans):
         if s.childNodes:
             value = s.childNodes[0].nodeValue
         else:
-            value = ''
+            value = '~'
+
+        if rename:
+            value = value.replace(wm.lower(), company.lower())
+            value = value.replace(wm.upper(), company.upper())
+            value = value.replace(wm.capitalize(), company.capitalize())
+            value = value.replace(wm, company.capitalize())
 
         value = value.replace('\\"', '"')
         value = value.replace('"', '\\"')
         value = value.replace(u'\x98', '')
         value = value.replace(u'\x7f', '')
         value = '"%s"' % value
-
-        if 'darkorbit' in index:
-            index.replace('darkorbit', 'cometh')
 
         if '"\\"' == value:
             value = '"\\\\"'
