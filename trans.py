@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import io
 import os
 import requests
@@ -53,9 +54,6 @@ def write_to_file(file, trans):
 
         if 'darkorbit' in index:
             index.replace('darkorbit', 'cometh')
-
-        if '%' in value:
-            value = value.replace('%', '%%')
 
         if '"\\"' == value:
             value = '"\\\\"'
